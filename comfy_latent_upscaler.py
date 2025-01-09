@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from safetensors.torch import load_file
 from huggingface_hub import hf_hub_download
+import folder_paths
 
 
 class Upscaler(nn.Module):
@@ -72,9 +73,12 @@ class LatentUpscaler:
 		model = Upscaler(scale_factor)
 		filename = f"latent-upscaler-v{model.version}_SD{latent_ver}-x{scale_factor}.safetensors"
 		local = os.path.join(
-			os.path.join(os.path.dirname(os.path.realpath(__file__)),"models"),
-			filename
+			folder_paths.models_dir,"LatentUpscaler", filename
 		)
+		if not os.path.exists(local) and os.path.exists(folder_paths.cache_dir):
+			local = os.path.join(
+				folder_paths.cache_dir,"LatentUpscaler", filename
+			)
 
 		if os.path.isfile(local):
 			print("LatentUpscaler: Using local model")
